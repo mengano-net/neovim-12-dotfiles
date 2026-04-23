@@ -1,3 +1,3 @@
+require("plugins")
 require("config")
--- require("lsp")      -- next
--- require("plugins")  -- next
+require("lsp")
