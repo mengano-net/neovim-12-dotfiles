@@ -50,3 +50,26 @@ For programmatic access, use the centralized JSON files at `~/.claude/sessions/`
 - - [ ] Decide on colorscheme (native built-in vs third-party)
 - - [ ] Evaluate what plugins still need to be added to lua/plugins/ (no native replacement)
 
+---
+
+## 2026-04-23 - Neovim 0.12 config — conform formatting debug + format_on_save fix
+
+**Purpose**: Continue building ground-up Neovim 0.12 config; this session focused on conform.nvim formatting behavior
+
+**Ideas Explored**:
+- File-based formatters (markdownlint-cli2) require file on disk — silent write before conform.format() fixes manual leader-lf; format_on_save changed from markdown-only to universal; attempted custom trim_whitespace formatter (line-based) — user rejected, reverted
+
+**Problems Solved**:
+- leader-lf not triggering markdownlint-cli2: fixed by writing buffer first; format_on_save now fires for all filetypes
+
+**Work Completed**:
+- Fixed leader-lf keymap with silent write; simplified format_on_save to always-on; reverted line-based trim_whitespace per user request
+
+**Decisions Made**:
+- format_on_save fires for ALL filetypes; trailing whitespace handled by each filetype's own formatter, not custom Lua; silent write before manual conform.format() required for file-based formatters
+
+**Current State**: conform.nvim fully configured. Core config (options, keymaps, autocmds, LSP, mason, lint, conform, which-key, tokyonight, treesitter) all complete.
+
+**Next Steps**:
+- 1) Verify leader-lf works for markdown after silent-write fix; 2) Telescope plugin — leader-er recent files, leader-f group; 3) Git plugin — leader-G group; 4) Git hunks — leader-h group; 5) Terminal plugin — leader-t group; 6) Audit old config for missed keymaps; 7) Wire vim.lsp.completion (completeopt popup)
+

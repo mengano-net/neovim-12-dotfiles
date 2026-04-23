@@ -4,9 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Purpose
 
-This is a **ground-up Neovim 0.12 configuration** built to replace the prior plugin-heavy setup at [mengano-net/neovim-dotfiles](https://github.com/mengano-net/neovim-dotfiles). The driving constraint is: **prefer native Neovim 0.12 functionality over community plugins wherever possible.**
+This is a **ground-up Neovim 0.12 configuration** built to replace the prior
+plugin-heavy setup at
+[mengano-net/neovim-dotfiles](https://github.com/mengano-net/neovim-dotfiles).
+The driving constraint is: **prefer native Neovim 0.12 functionality over
+community plugins wherever possible.**
 
 Key native features in 0.12 to leverage (and prefer over plugins):
+
 - **`vim.pack`** — built-in package/plugin manager (replaces lazy.nvim, packer, etc.)
 - **Native LSP** (`vim.lsp`) — replaces nvim-lspconfig as the orchestration layer
 - **Native completion** (`vim.lsp.completion`) — replaces nvim-cmp
@@ -31,7 +36,11 @@ Key native features in 0.12 to leverage (and prefer over plugins):
         └── <plugin>.lua
 ```
 
-**Module loading pattern:** `init.lua` calls `require("config")`, which delegates to `lua/config/init.lua`. That file is responsible for requiring `options`, `keymaps`, and `autocmds` in the correct order. Same pattern for `lsp/` and `plugins/`. This keeps the top-level `init.lua` minimal and each domain self-contained.
+**Module loading pattern:** `init.lua` calls `require("config")`, which
+delegates to `lua/config/init.lua`. That file is responsible for requiring
+`options`, `keymaps`, and `autocmds` in the correct order. Same pattern for
+`lsp/` and `plugins/`. This keeps the top-level `init.lua` minimal and each
+domain self-contained.
 
 The `lua/config/` layer must never require a plugin. The `lua/lsp/` layer uses `vim.lsp.config` and `vim.lsp.enable` (0.12 API), not nvim-lspconfig.
 
@@ -75,7 +84,7 @@ is the only supported setup.
 
 ## Hard Constraints
 
-- **No patched-font characters** — do not use Nerd Font glyphs or Unicode characters that require special font rendering (e.g. `↳`, `↴`, powerline symbols, devicons). This config must render correctly on SSH targets with default terminal fonts. Use plain ASCII for UI decorators (`> `, `--`, `|`, etc.).
+- **No patched-font characters** — do not use Nerd Font glyphs or Unicode characters that require special font rendering (e.g. `↳`, `↴`, powerline symbols, devicons). This config must render correctly on SSH targets with default terminal fonts. Use plain ASCII for UI decorators (`>`, `--`, `|`, etc.).
 - **netrw is intentionally enabled** — it serves as the native file browser (`:Ex`, `:Vex`, `:Sex`). Do not disable it or add a file explorer plugin without explicit instruction.
 
 ## Key Conventions
@@ -83,11 +92,11 @@ is the only supported setup.
 - **No plugin manager plugin** — use `vim.pack` (`:help vim.pack`)
 - **No nvim-lspconfig** — configure servers with `vim.lsp.config('server', { ... })` and enable with `vim.lsp.enable('server')`
 - **No nvim-cmp** — use `vim.lsp.completion.enable(true, client_id, bufnr)` or the built-in `completefunc`
-- **Keymaps** live in `lua/config/keymaps.lua`; LSP-specific keymaps are set inside the `on_attach` / `LspAttach` autocmd, not globally
+- **Keymaps** are split by concern: general keymaps in `lua/config/keymaps.lua`; plugin-specific keymaps co-located in `lua/plugins/<plugin>.lua`; LSP keymaps inside the `LspAttach` autocmd in `lua/lsp/`
 - **Options** follow `:help option-list`; use `vim.opt` not `vim.o` for table-valued options
 - **Autocommands** use `vim.api.nvim_create_autocmd` with named `augroup`s to prevent duplication on re-source
 
 ## Reference
 
-- Neovim 0.12 release notes: https://github.com/neovim/neovim/releases/tag/v0.12.0
-- Prior config (for reference/migration): https://github.com/mengano-net/neovim-dotfiles
+- Neovim 0.12 release notes: <https://github.com/neovim/neovim/releases/tag/v0.12.0>
+- Prior config (for reference/migration): <https://github.com/mengano-net/neovim-dotfiles>

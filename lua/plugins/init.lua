@@ -1,0 +1,6 @@
+require("plugins.tokyonight")
+require("plugins.treesitter")
+require("plugins.which-key")
+require("plugins.mason")
+require("plugins.lint")
+require("plugins.conform")
