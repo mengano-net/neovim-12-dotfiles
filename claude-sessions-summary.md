@@ -73,3 +73,44 @@ For programmatic access, use the centralized JSON files at `~/.claude/sessions/`
 **Next Steps**:
 - 1) Verify leader-lf works for markdown after silent-write fix; 2) Telescope plugin — leader-er recent files, leader-f group; 3) Git plugin — leader-G group; 4) Git hunks — leader-h group; 5) Terminal plugin — leader-t group; 6) Audit old config for missed keymaps; 7) Wire vim.lsp.completion (completeopt popup)
 
+---
+
+## 2026-04-23 - Neovim 0.12: winbar redesign, statusline, gitsigns
+
+**Purpose**: Redesign winbar with two-tone ASCII styling, implement native statusline replacing lualine, and add gitsigns plugin
+
+**Ideas Explored**:
+- Two-tone ASCII pill for winbar — light bg pill on dark bar, no patched-font chars needed
+- Native statusline via _G.StatuslineRender() + %{%v:lua...%} — same pattern as winbar
+- Git branch read from .git/HEAD directly — fast sync read, no plugin dependency
+- Statusline diff counts deferred until gitsigns confirmed working (vim.b.gitsigns_status_dict)
+
+**Problems Solved**:
+- Old winbar used nvim_eval_statusline for path but new config used expand(); switched to nvim_eval_statusline for better unnamed buffer handling
+- Old lualine gitsigns keymaps placed as table values inside setup() — ran eagerly at startup; fixed by moving to on_attach callback for proper per-buffer scoping
+
+**Work Completed**:
+- Winbar redesigned: nvim_eval_statusline path, two-tone light-pill style, [No Name] fallback, WinBarCaps removed
+- lua/config/statusline.lua created: mode blocks (colored bg), branch, diagnostics, filetype, word count, location, progress
+- Statusline wired into lua/config/init.lua
+- ColorScheme autocmd added so highlights survive theme changes
+- lua/plugins/gitsigns.lua created with on_attach keymaps, vim.pack.add pattern
+- gitsigns added to lua/plugins/init.lua
+
+**Decisions Made**:
+- Statusline in its own file (lua/config/statusline.lua) — keeps autocmds.lua focused on event handling
+- Git diff counts NOT wired into statusline yet — left NOTE comment pointing to vim.b.gitsigns_status_dict; wire after confirming gitsigns works
+- plenary.nvim dependency dropped from gitsigns — not required by recent versions
+- No Nerd Font glyphs anywhere — ▎ sign for gitsigns kept (standard Unicode, not patched-font)
+
+**Current State**: Branch: main; winbar and statusline live; gitsigns installed but not yet confirmed running; statusline diff counts pending gitsigns verification
+
+**Next Steps**:
+- - [ ] Restart Neovim, confirm gitsigns loads and on_attach keymaps work
+- - [ ] Wire statusline diff counts via vim.b.gitsigns_status_dict once gitsigns confirmed
+- - [ ] Telescope plugin — leader-er recent files, leader-f group
+- - [ ] Git buffer operations — leader-G group (beyond gitsigns: fugitive or native?)
+- - [ ] Terminal plugin — leader-t group
+- - [ ] Audit old config for missed keymaps
+- - [ ] Wire vim.lsp.completion (completeopt popup)
+
