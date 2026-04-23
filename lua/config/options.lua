@@ -1,7 +1,6 @@
--- Leader keys — must be set before any mappings are defined
+-- Leader keys are set in init.lua before any plugins or keymaps load.
+-- <Space> → <Nop> prevents the space key from moving the cursor when used as leader.
 vim.api.nvim_set_keymap("", "<Space>", "<Nop>", { noremap = true, silent = true })
-vim.g.mapleader = " "
-vim.g.maplocalleader = " "
 
 -- Spell -----------------------------------------------------------------------
 -- Ensure the spell directory and .add file exist on first run

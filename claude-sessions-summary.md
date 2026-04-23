@@ -114,3 +114,46 @@ For programmatic access, use the centralized JSON files at `~/.claude/sessions/`
 - - [ ] Audit old config for missed keymaps
 - - [ ] Wire vim.lsp.completion (completeopt popup)
 
+---
+
+## 2026-04-23 - Neovim 0.12: fzf-lua, statusline, mapleader bug fix
+
+**Purpose**: Replace telescope with fzf-lua, implement native statusline, debug and fix mapleader keymap invalidation bug
+
+**Ideas Explored**:
+- Option C (fzf-lua) over telescope — no plenary, no build step, uses system fzf binary
+- LSP picker keymaps (gd/gr/ls/lt) live in fzf-lua.lua under LspAttach — fzf-backed but only active when LSP attached
+- vim.fn.exepath('fzf') over hardcoded 'fzf' string — resolves full path regardless of nvim PATH
+- vim.v.shell_error check for git detection instead of parsing stdout string
+
+**Problems Solved**:
+- Problem: <leader>ff and <leader>bl did nothing; Root: vim.g.mapleader set in options.lua AFTER plugins loaded their keymaps — Neovim silently drops all leader keymaps when mapleader changes post-registration; Solution: moved mapleader assignment to top of init.lua before require('plugins')
+- Problem: fzf keymaps not set during init.lua load but worked in isolation; Root: mapleader invalidation (above) masked by silent=true; Diagnosed via headless nvim tracing each init stage
+
+**Work Completed**:
+- lua/plugins/fzf-lua.lua created — replaces telescope + plenary + fzf-native
+- fzf-lua keymaps: ff (git-aware), fb, fc, fs, fr, fj, bl, vt, vc
+- LSP picker keymaps (gd, gr, ls, lt) wired in LspAttach inside fzf-lua.lua
+- Dropped keymaps: Gb, Gf, Gl, fz
+- init.lua: mapleader set first, before require('plugins')
+- options.lua: removed duplicate mapleader assignment, kept Space=Nop
+- Stale telescope comment removed from keymaps.lua
+- All keymaps verified working after fix
+
+**Decisions Made**:
+- mapleader must be set in init.lua before any require() — documented with comment; this is a hard rule for this config
+- fzf-lua over telescope: no plenary dep, no build step, system fzf binary, same feature coverage for the gaps that mattered (live grep, file find, buffers, recent files)
+- LSP navigation keymaps that use fzf picker belong in fzf-lua.lua, not lua/lsp/ — fzf-lua.lua owns all fzf-backed interactions
+- git-aware find_files: check vim.v.shell_error from git rev-parse, not stdout string comparison
+
+**Current State**: Branch: feat/session-2026-04-23-winbar-statusline-gitsigns (open PR #3); fzf-lua working and all keymaps verified; mapleader bug fixed in init.lua
+
+**Next Steps**:
+- - [ ] Commit fzf-lua + mapleader fix to current branch or new branch
+- - [ ] Confirm gitsigns on_attach keymaps work (hj/hk/hp/hr/hs/hu, GB/GS/GR)
+- - [ ] Wire statusline git diff counts via vim.b.gitsigns_status_dict
+- - [ ] Terminal plugin — leader-t group
+- - [ ] Audit old config for missed keymaps
+- - [ ] Start lua/lsp/ — vim.lsp.config + vim.lsp.enable, LspAttach non-picker keymaps
+- - [ ] Wire vim.lsp.completion (completeopt popup)
+

@@ -18,7 +18,6 @@ map("n", "<leader>p", '"0p', { desc = "Paste from yank register" })
 
 -- File explorer --------------------------------------------------------------
 map("n", "<leader>ee", ":Lexplore<CR>", { silent = true, desc = "Toggle file explorer" })
--- <leader>er recent files → lives in lua/plugins/telescope.lua
 
 -- Buffers --------------------------------------------------------------------
 map("n", "<Tab>",   ":bnext<CR>",     { silent = true, desc = "Next buffer" })

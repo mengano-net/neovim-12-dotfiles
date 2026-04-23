@@ -84,7 +84,24 @@ is the only supported setup.
 - `lua/plugins/` — in progress:
   - `tokyonight`, `treesitter`, `which-key`, `mason`, `lint`, `conform` — complete
   - `gitsigns` — installed; keymaps in `on_attach`; statusline diff wiring pending
-  - Telescope, terminal plugin, additional git tooling — not yet added
+  - `fzf-lua` — complete; replaces telescope; keymaps ff/fb/fc/fs/fr/fj/bl/vt/vc working
+  - Terminal plugin, additional git tooling — not yet added
+
+## Init Loading Order (CRITICAL)
+
+`init.lua` must set `vim.g.mapleader` and `vim.g.maplocalleader` **before** any
+`require()` call. Changing `mapleader` after plugin keymaps are registered
+silently invalidates all `<leader>` keymaps — no error, no warning, they just
+stop working. This was a real bug found in session 2026-04-23.
+
+```lua
+-- init.lua — correct order
+vim.g.mapleader      = " "
+vim.g.maplocalleader = " "
+require("plugins")   -- plugin keymaps use mapleader safely
+require("config")    -- options, keymaps, autocmds
+require("lsp")
+```
 
 ## Hard Constraints
 
