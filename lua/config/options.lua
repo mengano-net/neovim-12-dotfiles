@@ -105,6 +105,12 @@ vim.opt.shortmess:append("c")
 vim.opt.whichwrap:append("<,>,[,],h,l")
 vim.opt.iskeyword:append("-,_")
 
+-- netrw ---------------------------------------------------------------------
+vim.g.netrw_altv         = 1   -- open vertical splits to the left (used by :Vex)
+vim.g.netrw_liststyle    = 3   -- tree view
+vim.g.netrw_winsize      = 45  -- 45% of window width
+vim.g.netrw_browse_split = 4   -- open files in the previously active window
+
 -- Disable unused built-in plugins ---------------------------------------------
 -- netrw intentionally left enabled — using it as the native file browser (:Ex, :Vex, :Sex)
 vim.g.loaded_gzip              = 1

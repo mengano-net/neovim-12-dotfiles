@@ -2,11 +2,23 @@ local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
 
 -- Augroups --------------------------------------------------------------------
-local general  = augroup("general",  { clear = true })
-local git      = augroup("git",      { clear = true })
-local markdown = augroup("markdown", { clear = true })
-local terminal = augroup("terminal", { clear = true })
-local plantuml = augroup("plantuml", { clear = true })
+local general    = augroup("general",    { clear = true })
+local git        = augroup("git",        { clear = true })
+local markdown   = augroup("markdown",   { clear = true })
+local terminal   = augroup("terminal",   { clear = true })
+local plantuml   = augroup("plantuml",   { clear = true })
+local netrw      = augroup("netrw",      { clear = true })
+local treesitter = augroup("treesitter", { clear = true })
+
+-- Treesitter ------------------------------------------------------------------
+-- Enable native treesitter highlighting for any filetype that has a parser.
+-- Silently skips filetypes with no parser available.
+autocmd("FileType", {
+    group = treesitter,
+    callback = function(ev)
+        pcall(vim.treesitter.start, ev.buf)
+    end,
+})
 
 -- Winbar ----------------------------------------------------------------------
 vim.api.nvim_set_hl(0, "WinBarPath",     { fg = "#dedede", bg = "#363636" })
@@ -68,7 +80,7 @@ autocmd("FileType", {
     callback = function()
         vim.opt_local.conceallevel  = 2
         vim.opt_local.spell         = true
-        vim.opt_local.spelllang     = "en_us"
+        vim.opt_local.spelllang     = "en"
         vim.opt_local.linebreak     = true
         vim.opt_local.shiftwidth    = 2
         vim.opt_local.softtabstop   = 2
@@ -86,6 +98,36 @@ autocmd("TermOpen", {
         vim.opt_local.number         = false
         vim.opt_local.relativenumber = false
         vim.opt_local.signcolumn     = "no"
+        vim.cmd("startinsert")
+    end,
+})
+
+-- Netrw -----------------------------------------------------------------------
+autocmd("FileType", {
+    group = netrw,
+    pattern = "netrw",
+    callback = function()
+        local opts = { buffer = true, silent = true }
+        vim.keymap.set("n", "<leader>eR", "<C-l>", vim.tbl_extend("force", opts, { desc = "Refresh tree" }))
+        vim.keymap.set("n", "<leader>eh", "gh",    vim.tbl_extend("force", opts, { remap = true, desc = "Toggle hidden files" }))
+    end,
+})
+
+-- Close netrw when a file buffer is entered
+autocmd("BufWinEnter", {
+    group = netrw,
+    callback = function()
+        local ft = vim.bo.filetype
+        local bt = vim.bo.buftype
+        if ft == "netrw" or bt ~= "" then return end
+        if vim.fn.isdirectory(vim.fn.expand("%")) == 1 then return end
+
+        for _, win in ipairs(vim.api.nvim_list_wins()) do
+            if vim.bo[vim.api.nvim_win_get_buf(win)].filetype == "netrw" then
+                vim.api.nvim_win_close(win, false)
+                break
+            end
+        end
     end,
 })
 
