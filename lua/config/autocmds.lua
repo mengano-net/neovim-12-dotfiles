@@ -21,15 +21,18 @@ autocmd("FileType", {
 })
 
 -- Winbar ----------------------------------------------------------------------
-vim.api.nvim_set_hl(0, "WinBarPath",     { fg = "#dedede", bg = "#363636" })
+-- Two-tone: light pill for path (dark text on light bg), red [+] on dark bar.
+-- No patched-font glyphs -- plain ASCII only.
+vim.api.nvim_set_hl(0, "WinBarPath",     { fg = "#363636", bg = "#dedede" })
 vim.api.nvim_set_hl(0, "WinBarModified", { fg = "#ff3838", bg = "#363636" })
 
 -- Evaluated dynamically on every redraw via %{%v:lua...%}
 _G.WinbarEval = function()
-    local path = vim.fn.expand("%:~:.")
+    local path = vim.api.nvim_eval_statusline("%f", {}).str
+    if path == "" then path = "[No Name]" end
     path = path:gsub("/", " > ")
-    local modified = vim.bo.modified and " [+]" or ""
-    return "%#WinBarPath#  " .. path .. "%#WinBarModified#" .. modified .. "%*"
+    local modified = vim.bo.modified and "%#WinBarModified# [+]%*" or ""
+    return "%#WinBarPath#  " .. path .. "  %*" .. modified
 end
 
 local winbar_excluded = {

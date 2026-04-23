@@ -78,9 +78,13 @@ is the only supported setup.
 
 - `lua/config/options.lua` — complete
 - `lua/config/keymaps.lua` — terminal mode only (`jk`, `<Esc>` to exit terminal insert mode); full keymap migration from prior config not yet done
-- `lua/config/autocmds.lua` — complete (winbar, yank highlight, git, markdown/tex, terminal, plantuml)
+- `lua/config/autocmds.lua` — complete (winbar, yank highlight, git, markdown/tex, terminal, plantuml, netrw)
+- `lua/config/statusline.lua` — complete; replaces lualine; git diff counts pending gitsigns verification
 - `lua/lsp/` — not started
-- `lua/plugins/` — not started
+- `lua/plugins/` — in progress:
+  - `tokyonight`, `treesitter`, `which-key`, `mason`, `lint`, `conform` — complete
+  - `gitsigns` — installed; keymaps in `on_attach`; statusline diff wiring pending
+  - Telescope, terminal plugin, additional git tooling — not yet added
 
 ## Hard Constraints
 
