@@ -101,5 +101,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
         lmap("<leader>gr", fzf.lsp_references,        "(r)eferences")
         lmap("<leader>ls", fzf.lsp_document_symbols,  "(s)ymbols")
         lmap("<leader>lt", fzf.lsp_typedefs,          "(t)ype definitions")
+        lmap("<leader>gi", fzf.lsp_implementations,   "(i)mplementations")
     end,
 })

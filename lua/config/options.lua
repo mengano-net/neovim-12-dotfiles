@@ -47,9 +47,7 @@ vim.opt.wildoptions   = "pum"
 
 
 -- Completion ------------------------------------------------------------------
--- NOTE: replace "preview" with "popup" once vim.lsp.completion is wired up;
--- "popup" renders the extra info as a floating window instead of a split scratch buffer
-vim.opt.completeopt = "menu,menuone,preview,noselect,noinsert"
+vim.opt.completeopt = "menu,menuone,popup,noselect,noinsert"
 vim.opt.pumheight   = 20
 
 -- Editing ---------------------------------------------------------------------
