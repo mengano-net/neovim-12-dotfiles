@@ -80,12 +80,27 @@ is the only supported setup.
 - `lua/config/keymaps.lua` — terminal mode only (`jk`, `<Esc>` to exit terminal insert mode); full keymap migration from prior config not yet done
 - `lua/config/autocmds.lua` — complete (winbar, yank highlight, git, markdown/tex, terminal, plantuml, netrw)
 - `lua/config/statusline.lua` — complete; replaces lualine; git diff counts pending gitsigns verification
-- `lua/lsp/` — not started
+- `lua/lsp/init.lua` — complete:
+  - Servers: `lua_ls`, `pyright`, `bashls`, `yamlls`, `jsonls`, `marksman`, `terraformls`
+  - Native completion via `vim.lsp.completion.enable` (autotrigger); `completeopt` uses `popup`
+  - Diagnostics: signs E/W/H/I, virtual_text off, underline, rounded float on cursor
+  - LspAttach keymaps: `K`, `<leader>lk/lr/la/gd/gr`
+  - fzf-lua LSP pickers: `<leader>gd/gr/gi/ls/lt` (buffer-local, LspAttach)
 - `lua/plugins/` — in progress:
   - `tokyonight`, `treesitter`, `which-key`, `mason`, `lint`, `conform` — complete
-  - `gitsigns` — installed; keymaps in `on_attach`; statusline diff wiring pending
+  - `gitsigns` — complete; keymaps in `on_attach`; statusline diff wiring pending
   - `fzf-lua` — complete; replaces telescope; keymaps ff/fb/fc/fs/fr/fj/bl/vt/vc working
-  - Terminal plugin, additional git tooling — not yet added
+  - `autopairs` — complete; treesitter-aware; no fast-wrap, no cmp integration
+  - `toggleterm` — complete; `<C-\>` toggle, `<leader>tf/th/tv` directions, zsh shell
+  - `fugitive` — complete; `<leader>Gs/Gc/Gp/GP`; `:Gclog`/`:Gdiff` available as commands
+
+## Pending
+
+- Full keymap migration from prior config (`lua/config/keymaps.lua` still partial)
+- Wire gitsigns diff counts into statusline
+- Install `terraform-ls` binary (`brew install hashicorp/tap/terraform-ls`) and verify attach on `.tf` files
+- Register `<leader>gi` (lsp_implementations) in `which-key.lua` for discoverability
+- CloudFormation schema injection into `yamlls` settings — user learning exercise, explicitly deferred
 
 ## Init Loading Order (CRITICAL)
 
