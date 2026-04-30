@@ -157,3 +157,43 @@ For programmatic access, use the centralized JSON files at `~/.claude/sessions/`
 - - [ ] Start lua/lsp/ — vim.lsp.config + vim.lsp.enable, LspAttach non-picker keymaps
 - - [ ] Wire vim.lsp.completion (completeopt popup)
 
+---
+
+## 2026-04-30 - LSP layer: native completion + new servers
+
+**Purpose**: Implement the LSP layer for the Neovim 0.12 config — native completion, keymaps, and additional language servers
+
+**Ideas Explored**:
+- vim.lsp.completion.trigger as manual trigger keymap — turned out nil in 0.12, dropped in favor of autotrigger
+- CloudFormation support via yamlls schema injection — deferred at user request, user will implement independently
+- C-Space for manual completion trigger — conflicts with tmux pane expand, removed as redundant with autotrigger=true
+
+**Problems Solved**:
+- Problem: vim.lsp.completion.trigger is nil in 0.12; Root: function does not exist; Solution: removed the keymap, autotrigger=true handles it
+- Problem: completeopt had 'preview' instead of 'popup'; Root: placeholder note left in options.lua; Solution: swapped to popup for floating extra-info window
+
+**Work Completed**:
+- Enabled native LSP completion via vim.lsp.completion.enable() in LspAttach with autotrigger=true
+- Updated completeopt from 'preview' to 'popup' in options.lua
+- Added jsonls (vscode-json-language-server) server config and enable
+- Added terraformls (terraform-ls) server config and enable
+- Added <leader>gi -> fzf.lsp_implementations in fzf-lua LspAttach block
+- Annotated all LSP server configs with macOS brew and CentOS install instructions
+
+**Decisions Made**:
+- Use autotrigger=true instead of a manual trigger keymap — cleaner, no tmux conflicts
+- jsonls via vscode-langservers-extracted (brew installable), not npm global
+- terraformls via hashicorp/tap/terraform-ls brew tap
+- CloudFormation deferred — user will self-implement yamlls schema injection as a learning exercise
+- gj/gk diagnostic cycling already covered by <leader>gj/<leader>gk in which-key.lua via vim.diagnostic.jump — no changes needed
+
+**Current State**: Branch: main. LSP layer complete. Native completion wired. 7 servers configured: lua_ls, pyright, bashls, yamlls, jsonls, marksman, terraformls.
+
+**Next Steps**:
+- - [ ] Install terraform-ls binary: brew install hashicorp/tap/terraform-ls
+- - [ ] Verify terraformls attaches on a .tf file
+- - [ ] Self-implement CloudFormation schema in yamlls settings (user learning exercise)
+- - [ ] Register <leader>gi in which-key.lua for discoverability
+- - [ ] Full keymap migration from prior config (lua/config/keymaps.lua still incomplete)
+- - [ ] Wire gitsigns diff counts into statusline (NOTE in gitsigns.lua)
+
