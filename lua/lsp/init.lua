@@ -50,6 +50,8 @@ vim.api.nvim_create_autocmd("LspAttach", {
         local map  = vim.keymap.set
         local opts = { buffer = ev.buf, silent = true }
 
+        vim.lsp.completion.enable(true, ev.data.client_id, ev.buf, { autotrigger = true })
+
         map("n", "K",           vim.lsp.buf.hover,         vim.tbl_extend("force", opts, { desc = "Hover documentation" }))
         map("n", "<leader>lk",  vim.lsp.buf.signature_help,vim.tbl_extend("force", opts, { desc = "(k) Signature help" }))
         map("n", "<leader>lr",  vim.lsp.buf.rename,        vim.tbl_extend("force", opts, { desc = "(r)ename symbol" }))
@@ -60,6 +62,10 @@ vim.api.nvim_create_autocmd("LspAttach", {
 })
 
 -- Server configurations -------------------------------------------------------
+
+-- lua-language-server
+-- macOS:  brew install lua-language-server
+-- CentOS: download binary from https://github.com/LuaLS/lua-language-server/releases
 vim.lsp.config('lua_ls', {
     capabilities = capabilities,
     cmd          = { "lua-language-server" },
@@ -85,6 +91,9 @@ vim.lsp.config('lua_ls', {
     },
 })
 
+-- pyright
+-- macOS:  brew install pyright  OR  npm install -g pyright
+-- CentOS: npm install -g pyright  OR  pip install pyright
 vim.lsp.config('pyright', {
     capabilities = capabilities,
     cmd          = { "pyright-langserver", "--stdio" },
@@ -96,6 +105,9 @@ vim.lsp.config('pyright', {
     },
 })
 
+-- bash-language-server
+-- macOS:  brew install bash-language-server
+-- CentOS: npm install -g bash-language-server
 vim.lsp.config('bashls', {
     capabilities = capabilities,
     cmd          = { "bash-language-server", "start" },
@@ -103,6 +115,9 @@ vim.lsp.config('bashls', {
     root_markers = { ".git" },
 })
 
+-- yaml-language-server
+-- macOS:  brew install yaml-language-server
+-- CentOS: npm install -g yaml-language-server
 vim.lsp.config('yamlls', {
     capabilities = capabilities,
     cmd          = { "yaml-language-server", "--stdio" },
@@ -127,11 +142,34 @@ vim.lsp.config('yamlls', {
     },
 })
 
+-- vscode-json-language-server (from vscode-langservers-extracted)
+-- macOS:  brew install vscode-langservers-extracted
+-- CentOS: npm install -g vscode-langservers-extracted
+vim.lsp.config('jsonls', {
+    capabilities = capabilities,
+    cmd          = { "vscode-json-language-server", "--stdio" },
+    filetypes    = { "json", "jsonc" },
+    root_markers = { ".git" },
+})
+
+-- marksman
+-- macOS:  brew install marksman
+-- CentOS: download binary from https://github.com/artempyanykh/marksman/releases
 vim.lsp.config('marksman', {
     capabilities = capabilities,
     cmd          = { "marksman", "server" },
     filetypes    = { "markdown" },
     root_markers = { ".marksman.toml", ".git" },
+})
+
+-- terraform-ls (HashiCorp Terraform language server)
+-- macOS:  brew install hashicorp/tap/terraform-ls
+-- CentOS: dnf install -y terraform-ls  (requires HashiCorp repo: https://rpm.releases.hashicorp.com)
+vim.lsp.config('terraformls', {
+    capabilities = capabilities,
+    cmd          = { "terraform-ls", "serve" },
+    filetypes    = { "terraform", "tf" },
+    root_markers = { ".terraform", ".git" },
 })
 
 -- Enable servers --------------------------------------------------------------
@@ -140,5 +178,7 @@ vim.lsp.enable({
     "pyright",
     "bashls",
     "yamlls",
+    "jsonls",
     "marksman",
+    "terraformls",
 })
