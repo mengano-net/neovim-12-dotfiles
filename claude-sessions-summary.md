@@ -231,3 +231,40 @@ For programmatic access, use the centralized JSON files at `~/.claude/sessions/`
 - - [ ] Wire gitsigns diff counts into statusline
 - - [ ] CloudFormation schema injection into yamlls settings — user learning exercise, explicitly deferred
 
+---
+
+## 2026-04-30 - Plugins: fugitive, autopairs, toggleterm
+
+**Purpose**: Add vim-fugitive, nvim-autopairs, and toggleterm plugins; update project docs
+
+**Ideas Explored**:
+- Native auto-pairing — rejected: missing smart skip/backspace/treesitter-context
+- Native terminal toggle (~50-60 lines Lua) — viable but toggleterm chosen for reliability
+- Fugitive necessity analysis: staging workflow determines value; user stages from within nvim more often
+
+**Problems Solved**:
+- toggleterm vim.pack.add failed with 'expected list, got table'; Root: version='*' is lazy.nvim syntax; Fix: removed version pin
+
+**Work Completed**:
+- Added lua/plugins/autopairs.lua with treesitter-aware config
+- Added lua/plugins/toggleterm.lua with float/horizontal/vertical directions and zsh shell
+- Added lua/plugins/fugitive.lua with keymaps Gs/Gc/Gp/GP matching old config
+- Registered all three plugins in lua/plugins/init.lua
+- Updated CLAUDE.md: current state, pending items, lsp layer now marked complete
+
+**Decisions Made**:
+- autopairs via plugin: smart skip/backspace/treesitter-context have no clean native equivalent
+- toggleterm via plugin: toggle/persist behavior is non-trivial Lua; plugin is focused and dependency-free
+- fugitive added: user stages from within nvim more than terminal; :Ge: (interactive staging) is the deciding feature
+- border style rounded throughout for consistency with LSP floats and diagnostics
+- GBrowse skipped: requires rhubarb companion plugin for GitHub URL resolution
+
+**Current State**: main branch, all three plugins installed and verified. CLAUDE.md updated.
+
+**Next Steps**:
+- - [ ] Full keymap migration from prior config (lua/config/keymaps.lua still partial)
+- - [ ] Wire gitsigns diff counts into statusline
+- - [ ] Install terraform-ls: brew install hashicorp/tap/terraform-ls, verify attach on .tf files
+- - [ ] Register <leader>gi (lsp_implementations) in which-key.lua for discoverability
+- - [ ] CloudFormation schema injection into yamlls — user learning exercise, deferred
+
