@@ -197,3 +197,37 @@ For programmatic access, use the centralized JSON files at `~/.claude/sessions/`
 - - [ ] Full keymap migration from prior config (lua/config/keymaps.lua still incomplete)
 - - [ ] Wire gitsigns diff counts into statusline (NOTE in gitsigns.lua)
 
+---
+
+## 2026-04-30 - Plugins: autopairs and toggleterm
+
+**Purpose**: Evaluate and add autopairs and toggleterm plugins to the new Neovim 0.12 config
+
+**Ideas Explored**:
+- Native auto-pairing via insert-mode keymaps — rejected due to missing smart skip/backspace/treesitter-context
+- Native terminal toggle via custom Lua module (~50-60 lines) — viable but toggleterm chosen for reliability
+
+**Problems Solved**:
+- toggleterm vim.pack.add call failed with 'expected list, got table'; Root: version='*' is lazy.nvim syntax, not valid for vim.pack; Fix: removed version pin
+
+**Work Completed**:
+- Added lua/plugins/autopairs.lua with treesitter-aware config (no fast-wrap, no cmp integration)
+- Added lua/plugins/toggleterm.lua with float/horizontal/vertical directions and zsh shell
+- Registered both plugins in lua/plugins/init.lua
+- Fixed toggleterm vim.pack.add error by removing invalid version='*' argument
+
+**Decisions Made**:
+- autopairs via plugin: smart skip, backspace, and treesitter-context are meaningful daily-use features with no clean native equivalent
+- toggleterm via plugin: toggle/persist behavior requires non-trivial Lua; plugin is focused and dependency-free
+- border style set to rounded (not curved) to match LSP floats and diagnostics throughout config
+- fast wrap (M-e) omitted from toggleterm — not used in prior workflow
+
+**Current State**: Branch: main, both plugins installed and verified working. No open PR for this session.
+
+**Next Steps**:
+- - [ ] Install terraform-ls binary: brew install hashicorp/tap/terraform-ls and verify it attaches on a .tf file
+- - [ ] Register <leader>gi (lsp_implementations) in which-key.lua for discoverability
+- - [ ] Complete full keymap migration from prior config (lua/config/keymaps.lua still partial)
+- - [ ] Wire gitsigns diff counts into statusline
+- - [ ] CloudFormation schema injection into yamlls settings — user learning exercise, explicitly deferred
+
