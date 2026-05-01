@@ -268,3 +268,49 @@ For programmatic access, use the centralized JSON files at `~/.claude/sessions/`
 - - [ ] Register <leader>gi (lsp_implementations) in which-key.lua for discoverability
 - - [ ] CloudFormation schema injection into yamlls — user learning exercise, deferred
 
+---
+
+## 2026-05-01 - Task/project triage: Chris, William Vo, Mark, ACC
+
+**Purpose**: Review and triage pending tasks and action items across key stakeholders: Chris Barton, William Vo, Mark Russo, and William Herold. Log two meeting transcripts and clean up task ownership records.
+
+**Ideas Explored**:
+- Stockton project has two parallel workstreams: EKS gateway architecture (William Vo) and ACC integration (William Vo + dev team)
+- Active-active identity architecture as the engineering direction for identity resilience — pending cost/vendor research from Chris before Jason/Priya briefing
+
+**Problems Solved**:
+- Multiple tasks had incorrect people assignments (Chris Barton, Mark Russo listed as owners/stakeholders on tasks they don't own); corrected by directly editing task frontmatter
+- William Herold's name was misspelled as 'William Harold' and 'William Harald' across multiple records; corrected to 'William Herold' throughout
+
+**Work Completed**:
+- Logged 1:1 meeting transcript with Chris Barton (identity architecture, DevEx/DevOps, GitHub migration, in-app purchase)
+- Logged 1:1 meeting transcript with William Vo (Stockton Gateway architecture, BYOT, ACC design)
+- Created task: Brief Jason Bonifay + Priya on active-active identity (pending Chris's research)
+- Updated identity/break-glass task with active-active context from Chris Barton 1:1
+- Updated Stockton task (William Vo) with 8-item scope including BYOT risk and PDM identification
+- Updated Stockton project with William Vo, confirmed architecture decisions, roles, and BYOT risk
+- Created ACC project (Autodesk Construction Cloud integration)
+- Created William Vo ACC task with 5 items (items 9-13 from William Vo 1:1)
+- Corrected S3 Files POC task: removed Chris Barton and Mark Russo; kept Dorian Kcira and Connor Barattini
+- Corrected Stockton POC task: removed Mark Russo, assigned to William Vo
+- Fixed all William Herold name misspellings across tasks, projects, and conversations
+
+**Decisions Made**:
+- S3 Files POC is Alex's task — Dorian and Connor are the only other stakeholders (not Chris or Mark)
+- Stockton POC architecture task ownership moved to William Vo (was Mark Russo)
+- Items 1-8 from William Vo 1:1 are William Vo's Stockton deliverables, not individual Alex tasks
+- Items 9-13 from William Vo 1:1 belong to ACC project, not Stockton
+- William Herold is a Principal Engineer on the dev side partnering with William Vo on Stockton
+- Active-active identity briefing to Jason/Priya is blocked on Chris Barton delivering cost/vendor research first
+
+**Current State**: Task records cleaned up and accurate. Two meeting transcripts logged. Stockton and ACC projects up to date. No code changes — working directory is nvim config, unchanged.
+
+**Next Steps**:
+- - [ ] Follow up with Chris Barton on active-active identity cost scenarios and vendor research (Okta vs Ping vs build)
+- - [ ] Approve Chris Barton ADP time-off for 2026-05-07 and 2026-05-08
+- - [ ] Brief Jason Bonifay + Priya once Chris delivers research
+- - [ ] Follow up with William Vo on Stockton design page gap assessment and ACC design doc link
+- - [ ] Engage William Herold on Stockton dev-side execution
+- - [ ] Confirm PDM/Product owner for Stockton (Louisa or Mason)
+- - [ ] Discuss in-app purchase flow follow-up with William Vo
+
