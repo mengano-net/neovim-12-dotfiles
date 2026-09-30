@@ -57,3 +57,37 @@
 **Next Steps**:
 - - [ ] Verify language server attachment by opening .sh, .yaml, and .py files and running `:checkhealth lsp` or `:lua vim.print(vim.lsp.get_clients())`
 
+---
+
+## 2026-09-30 - Resolve Mason Language Server Installations via Snap Node
+
+**Purpose**: Diagnose and fix missing npm-based language server installations in Mason, install Node via snap, and verify all three servers are working
+
+**Ideas Explored**:
+- Compared apt nodejs (18.19.1, EOL) vs snap node (24.21.0 LTS) — snap chosen for freshness and built-in npm
+- Considered unzip dependency separately (needed by Mason for other packages)
+
+**Problems Solved**:
+- Mason failed to install bashls, yamlls, pyright with 'Could not find executable npm in PATH' — root cause was missing node/npm. Resolved by installing Node 24 LTS via snap and unzip via apt.
+
+**Work Completed**:
+- Analyzed mason.log and identified npm missing from PATH as the blocker
+- Cross-checked available utilities: curl, wget, git, tar, gzip present; node, npm, unzip missing; python3 present but ensurepip unavailable
+- Verified WSL systemd availability to confirm snap would work
+- Installed Node 24.21.0 LTS with npm 11.19.0 via snap (--classic --channel=24/stable)
+- Installed unzip via apt
+- Verified all three language servers installed successfully to ~/.local/share/nvim/mason/packages
+- Documented findings and installation path in ai-sessions-summary.md
+
+**Decisions Made**:
+- Use snap over apt for Node — snap offers Node 24 LTS (vs apt's 18 EOL), includes npm with no extra dependency tree, simpler toolchain for Neovim LSP runtime
+
+**Current State**: All three npm-based language servers (bashls, yamlls, pyright) are installed and verified. PR #10 is open and awaiting review, but the ai-sessions-summary.md file contains incorrect dates (2026-09-30 instead of 2026-09-29) and stale content ('remain uninstalled' instead of 'installed').
+
+**Next Steps**:
+- - [ ] Fix dates in ai-sessions-summary.md: change 2026-09-30 to 2026-09-29
+- - [ ] Update stale content in summary file: remove 'remain uninstalled', confirm servers are now installed and working
+- - [ ] Optionally rename branch to remove doubled 'session-2026-09-29' prefix (cosmetic)
+- - [ ] Verify language servers attach by opening .sh/.yaml/.py files and running :checkhealth lsp
+- - [ ] Merge PR #10 after corrections
+
