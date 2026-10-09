@@ -17,7 +17,53 @@ map("n", "x", '"_x', { desc = "Delete char without yanking" })
 map("n", "<leader>p", '"0p', { desc = "Paste from yank register" })
 
 -- File explorer --------------------------------------------------------------
-map("n", "<leader>ee", ":Lexplore<CR>", { silent = true, desc = "Toggle file explorer" })
+-- :Lexplore hardcodes bufhidden=wipe and builds a new tree every time, which loses
+-- expanded dirs + cursor. Keep one netrw buffer alive and re-show it instead.
+local explorer_buf
+local explorer_wvars = {}
+
+-- netrw keeps tree state (w:netrw_treetop, w:netrw_treedict, ...) in window-local
+-- variables, so they must be carried over to the new window on reopen. netrw clears
+-- them while opening a file, so snapshot while the explorer is live and only accept
+-- snapshots that still have a treetop.
+local function snapshot_explorer(win)
+    if not (explorer_buf and win and vim.api.nvim_win_is_valid(win)) then return end
+    if vim.api.nvim_win_get_buf(win) ~= explorer_buf then return end
+    local vars = {}
+    for k, v in pairs(vim.fn.getwinvar(win, "")) do
+        if k:match("^netrw_") then vars[k] = v end
+    end
+    if vars.netrw_treetop then explorer_wvars = vars end
+end
+
+vim.api.nvim_create_autocmd({ "CursorMoved", "WinLeave", "BufLeave", "WinClosed" }, {
+    group = vim.api.nvim_create_augroup("netrw_explorer_state", { clear = true }),
+    callback = function(args)
+        snapshot_explorer(args.event == "WinClosed" and tonumber(args.match) or vim.api.nvim_get_current_win())
+    end,
+})
+
+local function toggle_explorer()
+    for _, win in ipairs(vim.api.nvim_list_wins()) do
+        if vim.api.nvim_win_get_buf(win) == explorer_buf then
+            snapshot_explorer(win)
+            vim.api.nvim_win_close(win, false)
+            return
+        end
+    end
+    if explorer_buf and vim.api.nvim_buf_is_valid(explorer_buf) then
+        local width = math.floor(vim.o.columns * vim.g.netrw_winsize / 100)
+        vim.cmd(("topleft vertical sbuffer %d"):format(explorer_buf))
+        vim.cmd(("vertical resize %d"):format(width))
+        vim.wo.winfixwidth = true
+        for k, v in pairs(explorer_wvars) do vim.w[k] = v end
+    else
+        vim.cmd("Lexplore")
+        explorer_buf = vim.api.nvim_get_current_buf()
+        vim.bo[explorer_buf].bufhidden = "hide"
+    end
+end
+map("n", "<leader>ee", toggle_explorer, { silent = true, desc = "Toggle file explorer" })
 
 -- Buffers --------------------------------------------------------------------
 map("n", "<Tab>",   ":bnext<CR>",     { silent = true, desc = "Next buffer" })

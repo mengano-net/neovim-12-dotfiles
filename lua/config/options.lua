@@ -107,6 +107,7 @@ vim.g.netrw_altv         = 1   -- open vertical splits to the left (used by :Vex
 vim.g.netrw_liststyle    = 3   -- tree view
 vim.g.netrw_winsize      = 45  -- 45% of window width
 vim.g.netrw_browse_split = 4   -- open files in the previously active window
+vim.g.netrw_fastbrowse   = 2   -- keep netrw buffers hidden (not wiped) so tree expansion + cursor survive close/reopen
 
 -- Disable unused built-in plugins ---------------------------------------------
 -- netrw intentionally left enabled — using it as the native file browser (:Ex, :Vex, :Sex)
