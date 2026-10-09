@@ -241,3 +241,38 @@
 - - [ ] Verify language servers attach by opening .sh/.yaml/.py files and running :checkhealth lsp
 - - [ ] Merge PR #10 after corrections
 
+---
+
+## 2026-10-09 - Fix netrw explorer state persistence across file opens
+
+**Purpose**: Preserve netrw's expanded directories and cursor position when returning to the explorer after opening a file.
+
+**Ideas Explored**:
+- Configure netrw_fastbrowse=2 (built-in buffer retention option)
+- Custom toggle to hide/reopen window while keeping buffer alive
+- Window-local variable save/restore to capture tree state before window close
+
+**Problems Solved**:
+- netrw_fastbrowse=2 alone ineffective because :Lexplore hardcodes bufhidden=wipe, destroying buffer and state on close
+- E121 crash on file open from restored explorer — window-local variables (netrw_treetop, netrw_treedict, etc.) not preserved in reopened window, causing netrw to fail mid-navigation
+- Merge conflict in ai-sessions-summary.md when main gained PR #10 which also added the file; resolved by keeping both session entries in chronological order
+
+**Work Completed**:
+- Built custom explorer toggle in lua/config/keymaps.lua replacing :Lexplore calls with hide/reopen of persistent buffer
+- Implemented window-local variable save/restore mechanism triggered on cursor moves and buffer-leave to preserve tree state across window close/reopen
+- Tested full cycle in headless environment: expand directories, open file (explorer auto-closes), reopen explorer with state intact, open second file — all without errors
+- Committed changes on branch fix/session-2026-10-09-netrw-explorer-state and pushed to remote; created PR #11
+- Resolved add/add conflict in ai-sessions-summary.md by merging both sessions' entries, committed as dd628d8
+
+**Decisions Made**:
+- Custom toggle instead of relying on netrw config settings — issue is architectural (:Lexplore destroys buffer), not configurable
+- Save window variables on cursor moves and BufLeave events to capture state before netrw clears them during file open
+- Kept auto-close behavior from BufWinEnter autocmd rather than replacing it; the toggle handles the hide/reshow without interfering
+
+**Current State**: Fix implemented and tested. Commit 208d0d5 on branch fix/session-2026-10-09-netrw-explorer-state. PR #11 open but out of sync with GitHub (merge commit dd628d8 not pushed). ai-sessions-summary.md contains five entries for today — first describes abandoned fastbrowse-only approach, remainder accurate; should be consolidated into one entry before merge.
+
+**Next Steps**:
+- - [ ] Push merge commit to GitHub (`git push` or via git-operations skill) to sync PR #11 state
+- - [ ] Consolidate five duplicate ai-sessions-summary.md entries into one accurate entry for today
+- - [ ] Review and merge PR #11 to main
+
