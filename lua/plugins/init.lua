@@ -1,7 +1,7 @@
 require("plugins.tokyonight")
-require("plugins.treesitter")
 require("plugins.which-key")
-require("plugins.mason")
+require("plugins.mason")       -- before treesitter: puts Mason bin (tree-sitter CLI) on PATH
+require("plugins.treesitter")
 require("plugins.lint")
 require("plugins.conform")
 require("plugins.gitsigns")

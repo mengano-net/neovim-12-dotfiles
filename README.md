@@ -69,12 +69,12 @@ No special font is needed.
 
 | Tool | Why |
 | --- | --- |
-| **Node.js + npm** | Mason installs `pyright`, `bash-language-server`, and `yaml-language-server` through npm. Without it, those installs fail. |
+| **Node.js + npm** | Mason installs `pyright`, `bash-language-server`, `yaml-language-server`, `json-lsp`, `prettier`, and `markdownlint-cli2` through npm. Without it, those installs fail. |
 | **Python 3 (with `venv`)** | Mason installs `black`, `isort`, `pylint`, and `beautysh` into Python virtualenvs. |
 | **ripgrep (`rg`)** | Backend for live grep (`<leader>fs`, `<leader>fc`). |
 | **fd** | Faster file finder outside git repos (`<leader>ff`). fzf-lua falls back to `rg`/`find` if it's missing. |
-| **curl, tar, gzip, unzip** | Mason uses these to download binaries for `lua-language-server`, `marksman`, `stylua`, and others. |
-| **C compiler + `tree-sitter` CLI (>= 0.26.1)** | Needed to build extra treesitter parsers (bash, python, yaml, toml, ...). Without it, only Neovim's bundled parsers are used. |
+| **curl, tar, gzip, unzip** | Mason uses these to download binaries for `lua-language-server`, `marksman`, `terraform-ls`, `tree-sitter-cli`, and others. |
+| **C compiler** | Builds treesitter parsers (bash, python, yaml, toml, ...). The `tree-sitter` CLI itself comes from Mason. Without a compiler, only Neovim's bundled parsers are used. |
 
 ### Optional
 
@@ -88,7 +88,7 @@ No special font is needed.
 **macOS (Homebrew):**
 
 ```bash
-brew install neovim git fzf ripgrep fd node python tree-sitter-cli
+brew install neovim git fzf ripgrep fd node python
 # zsh, curl, tar, unzip and a C compiler (Xcode CLT) ship with macOS;
 # if `cc` is missing: xcode-select --install
 ```
@@ -113,11 +113,6 @@ sudo apt install -y git zsh fzf ripgrep fd-find nodejs npm python3 python3-venv 
 mkdir -p ~/.local/bin && ln -sf "$(command -v fdfind)" ~/.local/bin/fd
 # Neovim 0.12: same release tarball as above (apt is usually older)
 ```
-
-The `tree-sitter` CLI on Linux: download a prebuilt binary from
-<https://github.com/tree-sitter/tree-sitter/releases>, or run
-`cargo install --locked tree-sitter-cli`. Don't use npm; nvim-treesitter
-explicitly doesn't support the npm build.
 
 > ARM Linux: replace `x86_64` with `arm64` in the Neovim tarball name.
 
@@ -153,18 +148,20 @@ lazy.nvim/packer setup, because old plugin directories there can conflict.
 What happens the first time you run `nvim`:
 
 1. **Plugin install prompt.** `vim.pack` reads `nvim-pack-lock.json` and offers
-   to install all 12 plugins at their locked commits. Accept it. Plugins go to
+   to install all 11 plugins at their locked commits. Accept it. Plugins go to
    `~/.local/share/nvim/site/pack/core/opt/`.
-2. **Mason installs language servers** in the background: `lua_ls`, `pyright`,
-   `bashls`, `yamlls`, `marksman`. Run `:Mason` to watch progress. They go to
-   `~/.local/share/nvim/mason/bin`, which Mason adds to Neovim's `PATH`.
+2. **Mason installs every external tool** in the background: language servers,
+   formatters, linters, and the `tree-sitter` CLI (full list below). Run
+   `:Mason` to watch progress. They go to `~/.local/share/nvim/mason/bin`,
+   which Mason adds to Neovim's `PATH`. Keep only **one** Neovim open until
+   this finishes; two instances installing at once can corrupt the installs.
 3. **Expect some warnings.** Messages like `<plugin> not yet loaded -- restart
    Nvim to complete setup` can show up during the first install. Quit and
    reopen Neovim (or run `:restart`).
-4. **Treesitter parsers build in the background** (bash, markdown_inline,
-   python, toml, yaml) if the `tree-sitter` CLI is installed. Parsers for other
-   languages are installed automatically the first time you open such a file.
-5. **Install the remaining tools** (next section).
+4. **Restart once Mason is done.** On that start, treesitter parsers (bash,
+   markdown_inline, python, toml, yaml) build in the background with Mason's
+   `tree-sitter` CLI. Parsers for other languages install automatically the
+   first time you open such a file.
 
 When you see the tokyonight colors, the ASCII statusline at the bottom, and no
 warnings after a restart, the setup is working.
@@ -173,34 +170,40 @@ warnings after a restart, the setup is working.
 
 ## Language servers, formatters, and linters
 
-Neovim finds every external tool on `PATH`. You can install them through
-**Mason** (works the same on every OS, needs no root) or through your **system
-package manager**. Use either one.
+**Mason installs all of these automatically** on startup, inside Neovim, with
+no root needed. The list lives in `lua/plugins/mason.lua` (`ensure_installed`).
+Nothing needs to be installed through brew, dnf, apt, pip, or npm by hand;
+Mason only needs Node.js/npm and Python 3 to be present (see
+[Prerequisites](#prerequisites)). Installs are skipped in headless runs.
 
 ### Language servers (`lua/lsp/init.lua`)
 
-| Server | Filetypes | Auto-installed by Mason? | Mason package | Homebrew |
-| --- | --- | --- | --- | --- |
-| `lua_ls` | lua | Yes | `lua-language-server` | `lua-language-server` |
-| `pyright` | python | Yes (needs npm) | `pyright` | `pyright` |
-| `bashls` | sh, zsh | Yes (needs npm) | `bash-language-server` | `bash-language-server` |
-| `yamlls` | yaml | Yes (needs npm) | `yaml-language-server` | `yaml-language-server` |
-| `marksman` | markdown | Yes | `marksman` | `marksman` |
-| `jsonls` | json, jsonc | **No** | `json-lsp` | `vscode-langservers-extracted` |
-| `terraformls` | terraform | **No** | `terraform-ls` | `terraform-ls` |
+| Server | Filetypes | Mason package |
+| --- | --- | --- |
+| `lua_ls` | lua | `lua-language-server` |
+| `pyright` | python | `pyright` |
+| `bashls` | sh, zsh | `bash-language-server` |
+| `yamlls` | yaml | `yaml-language-server` |
+| `marksman` | markdown | `marksman` |
+| `jsonls` | json, jsonc | `json-lsp` |
+| `terraformls` | terraform | `terraform-ls` |
 
 ### Formatters (`lua/plugins/conform.lua`)
 
 Format-on-save is on (5 s timeout). When no formatter is configured for a
 filetype, it falls back to LSP formatting.
 
-| Filetype | Formatter(s) | Mason package | Homebrew / pip |
-| --- | --- | --- | --- |
-| lua | `stylua` | `stylua` | `brew install stylua` |
-| python | `isort`, then `black` | `isort`, `black` | `pip install isort black` |
-| sh, bash, zsh | `beautysh` | `beautysh` | `brew install beautysh` |
-| json, css, html, javascript | `prettier` | `prettier` | `npm i -g prettier` |
-| markdown | `markdownlint-cli2` (`--fix`) | `markdownlint-cli2` | `brew install markdownlint-cli2` |
+| Filetype | Formatter(s) | Mason package |
+| --- | --- | --- |
+| lua | `lua_ls` (LSP formatting; keeps `=` alignment, 4-space indent) | `lua-language-server` |
+| python | `isort`, then `black` | `isort`, `black` |
+| sh, bash, zsh | `beautysh` | `beautysh` |
+| json, css, html, javascript | `prettier` | `prettier` |
+| markdown | `markdownlint-cli2` (`--fix`) | `markdownlint-cli2` |
+
+Lua deliberately has no dedicated formatter (such as stylua): `lua_ls` is
+already installed as the language server, so formatting is identical on every
+machine.
 
 ### Linters (`lua/plugins/lint.lua`)
 
@@ -211,16 +214,15 @@ Linters run on `BufEnter`, `BufWritePost`, and `InsertLeave`.
 | python | `pylint` | `pylint` |
 | markdown | `markdownlint-cli2` | `markdownlint-cli2` |
 
-### Install everything Mason doesn't auto-install
-
-Run this once, from inside Neovim:
-
-```vim
-:MasonInstall json-lsp terraform-ls stylua prettier black isort beautysh pylint markdownlint-cli2
-```
+Treesitter's `tree-sitter` CLI (Mason package `tree-sitter-cli`) is also on
+the list.
 
 A missing formatter or linter doesn't break anything. Conform and nvim-lint
 skip tools they can't find, so only that one feature is lost.
+
+**Add a tool:** add its Mason package name to `ensure_installed` in
+`lua/plugins/mason.lua` (find names with `:Mason`), then wire it into
+`lsp/init.lua`, `conform.lua`, or `lint.lua`.
 
 ---
 
@@ -363,10 +365,10 @@ Conventions:
 | `module 'config' not found` / `require` errors at startup | The config isn't in `~/.config/nvim`, or you launched with `NVIM_APPNAME`/`-u`. Check with `:lua print(vim.fn.stdpath("config"))`. |
 | `fzf-lua: fzf binary not found in PATH` | Install fzf. If you launch Neovim from a GUI on macOS, make sure `/opt/homebrew/bin` is on the GUI's PATH. |
 | `<leader>` mappings do nothing | Leader was changed after keymaps were registered. Keep `mapleader` as the first lines of `init.lua`. |
-| LSP doesn't attach (`:checkhealth vim.lsp` shows no clients) | The server binary isn't on PATH. Run `:Mason` or `:MasonInstall <pkg>`, then `:e` to reload the buffer. |
-| Mason install fails for pyright / bashls / yamlls | npm is missing or not on Neovim's PATH. Install Node.js and restart Neovim. |
+| LSP doesn't attach (`:checkhealth vim.lsp` shows no clients) | The server isn't installed yet. Check `:Mason`; wait for installs or press `i` on the package, then `:e` to reload the buffer. |
+| Mason install fails for pyright / bashls / yamlls / json-lsp / prettier / markdownlint-cli2 | npm is missing or not on Neovim's PATH. Install Node.js and restart Neovim. |
 | Mason install fails for black / isort / pylint / beautysh | Python 3 or its `venv` module is missing (Debian: `python3-venv`). |
-| `:TSInstall` fails | The `tree-sitter` CLI (>= 0.26.1) or a C compiler is missing. |
+| `:TSInstall` fails | A C compiler is missing, or Mason hasn't finished installing `tree-sitter-cli` (check `:Mason`). |
 | Format on save does nothing | The formatter isn't installed. `:ConformInfo` shows what it found. |
 | Terminal (`<C-\>`) closes immediately | zsh isn't installed. Install it or change `shell` in `toggleterm.lua`. |
 | Clipboard doesn't work on Linux | Install `wl-clipboard` or `xclip`. Run `:checkhealth provider`. |
