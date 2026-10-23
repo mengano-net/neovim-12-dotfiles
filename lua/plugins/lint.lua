@@ -15,5 +15,6 @@ lint.linters_by_ft = {
 
 vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
     group    = vim.api.nvim_create_augroup("lint", { clear = true }),
-    callback = function() lint.try_lint() end,
+    -- Stay quiet when a linter isn't installed; <leader>lf still reports errors
+    callback = function() lint.try_lint(nil, { ignore_errors = true }) end,
 })
