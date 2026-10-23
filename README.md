@@ -74,7 +74,7 @@ No special font is needed.
 | **ripgrep (`rg`)** | Backend for live grep (`<leader>fs`, `<leader>fc`). |
 | **fd** | Faster file finder outside git repos (`<leader>ff`). fzf-lua falls back to `rg`/`find` if it's missing. |
 | **curl, tar, gzip, unzip** | Mason uses these to download binaries for `lua-language-server`, `marksman`, `stylua`, and others. |
-| **C compiler + `tree-sitter` CLI (>= 0.26.1)** | Needed to install extra treesitter parsers (bash, python, yaml, toml, ...). See [Known issues](#known-issues). |
+| **C compiler + `tree-sitter` CLI (>= 0.26.1)** | Needed to build extra treesitter parsers (bash, python, yaml, toml, ...). Without it, only Neovim's bundled parsers are used. |
 
 ### Optional
 
@@ -160,12 +160,14 @@ What happens the first time you run `nvim`:
    `~/.local/share/nvim/mason/bin`, which Mason adds to Neovim's `PATH`.
 3. **Expect some warnings.** Messages like `<plugin> not yet loaded -- restart
    Nvim to complete setup` can show up during the first install. Quit and
-   reopen Neovim (or run `:restart`). The treesitter one doesn't go away; see
-   [Known issues](#known-issues).
-4. **Install the remaining tools** (next section).
+   reopen Neovim (or run `:restart`).
+4. **Treesitter parsers build in the background** (bash, markdown_inline,
+   python, toml, yaml) if the `tree-sitter` CLI is installed. Parsers for other
+   languages are installed automatically the first time you open such a file.
+5. **Install the remaining tools** (next section).
 
 When you see the tokyonight colors, the ASCII statusline at the bottom, and no
-warnings other than the treesitter one, the setup is working.
+warnings after a restart, the setup is working.
 
 ---
 
@@ -373,18 +375,6 @@ Conventions:
 ---
 
 ## Known issues
-
-- **Treesitter "not yet loaded" warning on every startup.** The locked
-  `nvim-treesitter` revision is the `main` branch rewrite, which no longer has
-  the `nvim-treesitter.configs` module that `lua/plugins/treesitter.lua`
-  loads. The setup returns early, so `ensure_installed` and `auto_install`
-  never run. Highlighting still works for the parsers bundled with Neovim
-  (c, lua, markdown, markdown_inline, query, vim, vimdoc). For other languages,
-  install parsers by hand (needs the `tree-sitter` CLI and a C compiler):
-
-  ```vim
-  :TSInstall bash python yaml toml
-  ```
 
 - **mason-lspconfig expects nvim-lspconfig**, which this config deliberately
   doesn't install. Its `ensure_installed` currently works without it, but that

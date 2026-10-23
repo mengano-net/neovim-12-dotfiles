@@ -118,10 +118,6 @@ is the only supported setup.
 
 ## Pending
 
-- Fix `lua/plugins/treesitter.lua`: locked nvim-treesitter is the `main`
-  rewrite, which has no `nvim-treesitter.configs`; setup bails with a warning on
-  every startup and `ensure_installed` never runs (use
-  `require('nvim-treesitter').install({...})`)
 - `<leader>gd`/`<leader>gr` are mapped in both `lua/lsp/init.lua` and
   `fzf-lua.lua` LspAttach; the lsp one wins — pick one
 - Wire gitsigns diff counts into statusline
