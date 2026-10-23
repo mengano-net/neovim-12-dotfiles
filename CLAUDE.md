@@ -155,6 +155,18 @@ require("lsp")
   (`:Ex`, `:Vex`, `:Sex`). Do not disable it or add a file explorer plugin
   without explicit instruction.
 
+## CI
+
+- `.github/workflows/startup.yml` is a functional smoke test only: headless
+  first start (plugins from lockfile), then a second start that opens sample
+  files and fails on any WARN/ERROR notification or error message. Logic lives
+  in `.github/scripts/startup-check.lua`.
+- **Never add style or lint checks to CI** (stylua, selene, lua-ls --check,
+  markdownlint). Formatting and linting belong to the editor; local formatters
+  differ per machine, so CI style gates would fail on tool disagreements.
+- Actions are pinned to commit SHAs; Neovim tarball is pinned by version and
+  SHA-256 in the workflow `env`.
+
 ## Key Conventions
 
 - **No plugin manager plugin** — use `vim.pack` (`:help vim.pack`)

@@ -1,0 +1,63 @@
+# Functional smoke test: the config must start cleanly on a fresh machine.
+# Style and linting are intentionally NOT checked here -- they belong to the editor.
+name: startup
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: startup-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NVIM_VERSION: v0.12.6
+  NVIM_SHA256: 474430d53e6264f6d6dd18db42d6dc9df3a1b56ca9e88a325bbf860e1a811d87
+
+jobs:
+  startup:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      # Isolated XDG dirs; the checkout lives at $XDG_CONFIG_HOME/nvim like a real install
+      XDG_CONFIG_HOME: ${{ github.workspace }}/xdg/config
+      XDG_DATA_HOME: ${{ github.workspace }}/xdg/data
+      XDG_STATE_HOME: ${{ github.workspace }}/xdg/state
+      XDG_CACHE_HOME: ${{ github.workspace }}/xdg/cache
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: xdg/config/nvim
+          persist-credentials: false
+
+      - name: Install Neovim ${{ env.NVIM_VERSION }}
+        run: |
+          curl -fsSL -o nvim.tar.gz \
+            "https://github.com/neovim/neovim/releases/download/${NVIM_VERSION}/nvim-linux-x86_64.tar.gz"
+          echo "${NVIM_SHA256}  nvim.tar.gz" | sha256sum --check
+          sudo tar -C /opt -xzf nvim.tar.gz
+          echo "/opt/nvim-linux-x86_64/bin" >> "$GITHUB_PATH"
+
+      - name: Install required tools
+        run: sudo apt-get update -q && sudo apt-get install -y -q fzf zsh
+
+      - name: First start (install plugins from lockfile)
+        run: |
+          SMOKE_MODE=bootstrap timeout 300 \
+            nvim --headless --cmd "luafile $XDG_CONFIG_HOME/nvim/.github/scripts/startup-check.lua" </dev/null
+
+      - name: Second start must be clean
+        run: |
+          cfg="$XDG_CONFIG_HOME/nvim"
+          mkdir -p samples
+          printf 'def f():\n    return 1\n' > samples/t.py
+          printf '#!/bin/sh\necho hi\n'       > samples/t.sh
+          printf 'a: 1\n'                     > samples/t.yaml
+          printf '{"a": 1}\n'                 > samples/t.json
+          export SMOKE_MODE=check
+          export SMOKE_FILES="$cfg/init.lua,$cfg/README.md,$PWD/samples/t.py,$PWD/samples/t.sh,$PWD/samples/t.yaml,$PWD/samples/t.json"
+          timeout 120 nvim --headless --cmd "luafile $cfg/.github/scripts/startup-check.lua" </dev/null

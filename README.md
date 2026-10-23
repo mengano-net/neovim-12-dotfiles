@@ -376,10 +376,6 @@ Conventions:
 
 ## Known issues
 
-- **mason-lspconfig expects nvim-lspconfig**, which this config deliberately
-  doesn't install. Its `ensure_installed` currently works without it, but that
-  isn't guaranteed by the plugin. If server auto-install stops working, install
-  the servers with `:MasonInstall` instead.
 - **Statusline git diff counts** (`+N ~N -N`) aren't wired up yet; only the
   branch name is shown.
 
@@ -402,6 +398,9 @@ mv ~/.config/nvim.bak ~/.config/nvim   # etc.
 - **Pull requests are by invitation only.** Only invited collaborators can open
   pull requests. If you'd like to contribute code, open an issue first to
   discuss it.
+- **CI** (`.github/workflows/startup.yml`) only checks that the config starts
+  cleanly on a fresh Linux machine with Neovim 0.12. Style and linting aren't
+  checked in CI; they're handled in the editor (conform, nvim-lint).
 - Forking for your own use is fine; this is a personal config, so feel free to
   adapt it.
 - **Security issues:** don't open a public issue. See [SECURITY.md](SECURITY.md).
