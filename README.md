@@ -33,6 +33,7 @@ renders correctly over SSH with a default terminal font.
 10. [Troubleshooting](#troubleshooting)
 11. [Known issues](#known-issues)
 12. [Uninstalling](#uninstalling)
+13. [Contributing](#contributing)
 
 Full keymap reference: [docs/KEYMAPS.md](docs/KEYMAPS.md)
 
@@ -401,6 +402,19 @@ rm -rf ~/.config/nvim ~/.local/share/nvim ~/.local/state/nvim ~/.cache/nvim
 # restore a backup if you made one:
 mv ~/.config/nvim.bak ~/.config/nvim   # etc.
 ```
+
+---
+
+## Contributing
+
+- **Issues are welcome from anyone.** Bug reports, questions, and suggestions
+  go in [GitHub Issues](https://github.com/mengano-net/neovim-12-dotfiles/issues).
+- **Pull requests are by invitation only.** Only invited collaborators can open
+  pull requests. If you'd like to contribute code, open an issue first to
+  discuss it.
+- Forking for your own use is fine; this is a personal config, so feel free to
+  adapt it.
+- **Security issues:** don't open a public issue. See [SECURITY.md](SECURITY.md).
 
 ---
 
