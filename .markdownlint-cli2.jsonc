@@ -1,0 +1,8 @@
+// markdownlint-cli2 config for this repo's docs
+// (also picked up by conform/nvim-lint when editing markdown here)
+{
+  "config": {
+    // Wrap prose at 80; tables and code blocks can't be wrapped meaningfully
+    "MD013": { "line_length": 80, "tables": false, "code_blocks": false }
+  }
+}

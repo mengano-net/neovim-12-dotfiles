@@ -1,6 +1,7 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with
+code in this repository.
 
 ## Project Purpose
 
@@ -12,16 +13,19 @@ community plugins wherever possible.**
 
 Key native features in 0.12 to leverage (and prefer over plugins):
 
-- **`vim.pack`** — built-in package/plugin manager (replaces lazy.nvim, packer, etc.)
-- **Native LSP** (`vim.lsp`) — replaces nvim-lspconfig as the orchestration layer
+- **`vim.pack`** — built-in package/plugin manager (replaces lazy.nvim, packer,
+  etc.)
+- **Native LSP** (`vim.lsp`) — replaces nvim-lspconfig as the orchestration
+  layer
 - **Native completion** (`vim.lsp.completion`) — replaces nvim-cmp
 - **Native color themes** — replaces theme plugins for built-in colorschemes
 - **`vim.snippet`** — built-in snippet engine (replaces LuaSnip)
-- **`vim.iter`**, **`vim.fs`**, **`vim.system`** — stdlib utilities to use over external libs
+- **`vim.iter`**, **`vim.fs`**, **`vim.system`** — stdlib utilities to use over
+  external libs
 
 ## Repository Layout (target structure)
 
-```
+```text
 ~/.config/nvim/          ← or stowed here from this repo
 ├── init.lua             ← entry point; calls require("config"), require("lsp"), etc.
 └── lua/
@@ -42,11 +46,13 @@ delegates to `lua/config/init.lua`. That file is responsible for requiring
 `lsp/` and `plugins/`. This keeps the top-level `init.lua` minimal and each
 domain self-contained.
 
-The `lua/config/` layer must never require a plugin. The `lua/lsp/` layer uses `vim.lsp.config` and `vim.lsp.enable` (0.12 API), not nvim-lspconfig.
+The `lua/config/` layer must never require a plugin. The `lua/lsp/` layer uses
+`vim.lsp.config` and `vim.lsp.enable` (0.12 API), not nvim-lspconfig.
 
 ## Installation
 
-The repo is cloned **directly** into `~/.config/nvim` — no symlinks, no `NVIM_APPNAME`:
+The repo is cloned **directly** into `~/.config/nvim` — no symlinks, no
+`NVIM_APPNAME`:
 
 ```bash
 git clone https://github.com/mengano-net/neovim-12-dotfiles ~/.config/nvim
@@ -54,7 +60,8 @@ nvim
 ```
 
 Do not use `nvim -u` or `NVIM_APPNAME` — both cause `require()` to fail because
-Neovim won't add `lua/` to the runtimepath correctly. Cloning into `~/.config/nvim`
+Neovim won't add `lua/` to the runtimepath correctly. Cloning into
+`~/.config/nvim`
 is the only supported setup.
 
 ## How to Validate
@@ -64,7 +71,7 @@ is the only supported setup.
 :messages
 
 # Inspect loaded packages at runtime
-:lua vim.print(vim.pack.list())
+:lua vim.print(vim.pack.get())
 
 # Check LSP status for the current buffer
 :checkhealth lsp
@@ -77,30 +84,53 @@ is the only supported setup.
 ## Current State (as of last session)
 
 - `lua/config/options.lua` — complete
-- `lua/config/keymaps.lua` — terminal mode only (`jk`, `<Esc>` to exit terminal insert mode); full keymap migration from prior config not yet done
-- `lua/config/autocmds.lua` — complete (winbar, yank highlight, git, markdown/tex, terminal, plantuml, netrw)
-- `lua/config/statusline.lua` — complete; replaces lualine; git diff counts pending gitsigns verification
+- `lua/config/keymaps.lua` — general keymaps migrated (insert/undo breakpoints,
+  registers, buffers, windows, splits, search, visual, terminal) plus persistent
+  netrw explorer toggle `<leader>ee`
+- User-facing docs: `README.md` (setup, dependencies, OS support,
+  troubleshooting) and `docs/KEYMAPS.md` — keep both in sync when adding
+  plugins, servers, tools, or keymaps
+- `lua/config/autocmds.lua` — complete (winbar, yank highlight, git,
+  markdown/tex, terminal, plantuml, netrw)
+- `lua/config/statusline.lua` — complete; replaces lualine; git diff counts
+  pending gitsigns verification
 - `lua/lsp/init.lua` — complete:
-  - Servers: `lua_ls`, `pyright`, `bashls`, `yamlls`, `jsonls`, `marksman`, `terraformls`
-  - Native completion via `vim.lsp.completion.enable` (autotrigger); `completeopt` uses `popup`
-  - Diagnostics: signs E/W/H/I, virtual_text off, underline, rounded float on cursor
+  - Servers: `lua_ls`, `pyright`, `bashls`, `yamlls`, `jsonls`, `marksman`,
+    `terraformls`
+  - Native completion via `vim.lsp.completion.enable` (autotrigger);
+    `completeopt` uses `popup`
+  - Diagnostics: signs E/W/H/I, virtual_text off, underline, rounded float on
+    cursor
   - LspAttach keymaps: `K`, `<leader>lk/lr/la/gd/gr`
   - fzf-lua LSP pickers: `<leader>gd/gr/gi/ls/lt` (buffer-local, LspAttach)
 - `lua/plugins/` — in progress:
-  - `tokyonight`, `treesitter`, `which-key`, `mason`, `lint`, `conform` — complete
-  - `gitsigns` — complete; keymaps in `on_attach`; statusline diff wiring pending
-  - `fzf-lua` — complete; replaces telescope; keymaps ff/fb/fc/fs/fr/fj/bl/vt/vc working
+  - `tokyonight`, `treesitter`, `which-key`, `mason`, `lint`, `conform` —
+    complete
+  - `gitsigns` — complete; keymaps in `on_attach`; statusline diff wiring
+    pending
+  - `fzf-lua` — complete; replaces telescope; keymaps ff/fb/fc/fs/fr/fj/bl/vt/vc
+    working
   - `autopairs` — complete; treesitter-aware; no fast-wrap, no cmp integration
-  - `toggleterm` — complete; `<C-\>` toggle, `<leader>tf/th/tv` directions, zsh shell
-  - `fugitive` — complete; `<leader>Gs/Gc/Gp/GP`; `:Gclog`/`:Gdiff` available as commands
+  - `toggleterm` — complete; `<C-\>` toggle, `<leader>tf/th/tv` directions, zsh
+    shell
+  - `fugitive` — complete; `<leader>Gs/Gc/Gp/GP`; `:Gclog`/`:Gdiff` available as
+    commands
 
 ## Pending
 
-- Full keymap migration from prior config (`lua/config/keymaps.lua` still partial)
+- Fix `lua/plugins/treesitter.lua`: locked nvim-treesitter is the `main`
+  rewrite, which has no `nvim-treesitter.configs`; setup bails with a warning on
+  every startup and `ensure_installed` never runs (use
+  `require('nvim-treesitter').install({...})`)
+- `<leader>gd`/`<leader>gr` are mapped in both `lua/lsp/init.lua` and
+  `fzf-lua.lua` LspAttach; the lsp one wins — pick one
 - Wire gitsigns diff counts into statusline
-- Install `terraform-ls` binary (`brew install hashicorp/tap/terraform-ls`) and verify attach on `.tf` files
-- Register `<leader>gi` (lsp_implementations) in `which-key.lua` for discoverability
-- CloudFormation schema injection into `yamlls` settings — user learning exercise, explicitly deferred
+- Install `terraform-ls` binary (`brew install hashicorp/tap/terraform-ls`) and
+  verify attach on `.tf` files
+- Register `<leader>gi` (lsp_implementations) in `which-key.lua` for
+  discoverability
+- CloudFormation schema injection into `yamlls` settings — user learning
+  exercise, explicitly deferred
 
 ## Init Loading Order (CRITICAL)
 
@@ -120,19 +150,34 @@ require("lsp")
 
 ## Hard Constraints
 
-- **No patched-font characters** — do not use Nerd Font glyphs or Unicode characters that require special font rendering (e.g. `↳`, `↴`, powerline symbols, devicons). This config must render correctly on SSH targets with default terminal fonts. Use plain ASCII for UI decorators (`>`, `--`, `|`, etc.).
-- **netrw is intentionally enabled** — it serves as the native file browser (`:Ex`, `:Vex`, `:Sex`). Do not disable it or add a file explorer plugin without explicit instruction.
+- **No patched-font characters** — do not use Nerd Font glyphs or Unicode
+  characters that require special font rendering (e.g. `↳`, `↴`, powerline
+  symbols, devicons). This config must render correctly on SSH targets with
+  default terminal fonts. Use plain ASCII for UI decorators (`>`, `--`, `|`,
+  etc.).
+- **netrw is intentionally enabled** — it serves as the native file browser
+  (`:Ex`, `:Vex`, `:Sex`). Do not disable it or add a file explorer plugin
+  without explicit instruction.
 
 ## Key Conventions
 
 - **No plugin manager plugin** — use `vim.pack` (`:help vim.pack`)
-- **No nvim-lspconfig** — configure servers with `vim.lsp.config('server', { ... })` and enable with `vim.lsp.enable('server')`
-- **No nvim-cmp** — use `vim.lsp.completion.enable(true, client_id, bufnr)` or the built-in `completefunc`
-- **Keymaps** are split by concern: general keymaps in `lua/config/keymaps.lua`; plugin-specific keymaps co-located in `lua/plugins/<plugin>.lua`; LSP keymaps inside the `LspAttach` autocmd in `lua/lsp/`
-- **Options** follow `:help option-list`; use `vim.opt` not `vim.o` for table-valued options
-- **Autocommands** use `vim.api.nvim_create_autocmd` with named `augroup`s to prevent duplication on re-source
+- **No nvim-lspconfig** — configure servers with
+  `vim.lsp.config('server', { ... })` and enable with
+  `vim.lsp.enable('server')`
+- **No nvim-cmp** — use `vim.lsp.completion.enable(true, client_id, bufnr)` or
+  the built-in `completefunc`
+- **Keymaps** are split by concern: general keymaps in `lua/config/keymaps.lua`;
+  plugin-specific keymaps co-located in `lua/plugins/<plugin>.lua`; LSP keymaps
+  inside the `LspAttach` autocmd in `lua/lsp/`
+- **Options** follow `:help option-list`; use `vim.opt` not `vim.o` for
+  table-valued options
+- **Autocommands** use `vim.api.nvim_create_autocmd` with named `augroup`s to
+  prevent duplication on re-source
 
 ## Reference
 
-- Neovim 0.12 release notes: <https://github.com/neovim/neovim/releases/tag/v0.12.0>
-- Prior config (for reference/migration): <https://github.com/mengano-net/neovim-dotfiles>
+- Neovim 0.12 release notes:
+  <https://github.com/neovim/neovim/releases/tag/v0.12.0>
+- Prior config (for reference/migration):
+  <https://github.com/mengano-net/neovim-dotfiles>
