@@ -121,8 +121,8 @@ is the only supported setup.
 - `<leader>gd`/`<leader>gr` are mapped in both `lua/lsp/init.lua` and
   `fzf-lua.lua` LspAttach; the lsp one wins — pick one
 - Wire gitsigns diff counts into statusline
-- Install `terraform-ls` binary (`brew install hashicorp/tap/terraform-ls`) and
-  verify attach on `.tf` files
+- Verify `terraformls` attaches on `.tf` files (`terraform-ls` now installed by
+  Mason)
 - Register `<leader>gi` (lsp_implementations) in `which-key.lua` for
   discoverability
 - CloudFormation schema injection into `yamlls` settings — user learning
@@ -155,12 +155,31 @@ require("lsp")
   (`:Ex`, `:Vex`, `:Sex`). Do not disable it or add a file explorer plugin
   without explicit instruction.
 
+## CI
+
+- `.github/workflows/startup.yml` is a functional smoke test only: headless
+  first start (plugins from lockfile), then a second start that opens sample
+  files and fails on any WARN/ERROR notification or error message. Logic lives
+  in `.github/scripts/startup-check.lua`.
+- **Never add style or lint checks to CI** (stylua, selene, lua-ls --check,
+  markdownlint). Formatting and linting belong to the editor; local formatters
+  differ per machine, so CI style gates would fail on tool disagreements.
+- Actions are pinned to commit SHAs; Neovim tarball is pinned by version and
+  SHA-256 in the workflow `env`.
+
 ## Key Conventions
 
 - **No plugin manager plugin** — use `vim.pack` (`:help vim.pack`)
 - **No nvim-lspconfig** — configure servers with
   `vim.lsp.config('server', { ... })` and enable with
   `vim.lsp.enable('server')`
+- **All external tools come from Mason** — every LSP server, formatter, linter,
+  and the `tree-sitter` CLI is listed in `ensure_installed` in
+  `lua/plugins/mason.lua` (Mason package names) and auto-installed on
+  `VimEnter` (skipped headless). No mason-lspconfig; no brew/pip/npm installs
+  in docs. Adding a tool = add it there + wire it in lsp/conform/lint.
+- **Lua formatting is `lua_ls` only** (conform `lsp_format = "fallback"`); do
+  not add stylua — one formatter, same on every machine, keeps `=` alignment.
 - **No nvim-cmp** — use `vim.lsp.completion.enable(true, client_id, bufnr)` or
   the built-in `completefunc`
 - **Keymaps** are split by concern: general keymaps in `lua/config/keymaps.lua`;
