@@ -15,7 +15,6 @@ conform.setup({
         html       = { "prettier" },
         json       = { "prettier" },
         javascript = { "prettier" },
-        lua        = { "stylua" },
         markdown   = { "markdownlint-cli2" },
         python     = { "isort", "black" },
         sh         = { "beautysh" },
