@@ -20,9 +20,10 @@ if not ok then
     return
 end
 
--- Building parsers needs the tree-sitter CLI (and a C compiler). Without it,
--- skip installs silently; bundled parsers (c, lua, markdown, vimdoc, ...) still work.
-local can_build = vim.fn.executable('tree-sitter') == 1
+-- Building parsers needs the tree-sitter CLI (installed by Mason) and a C compiler.
+-- Without the CLI, skip installs silently; bundled parsers (c, lua, markdown,
+-- vimdoc, ...) still work. Checked lazily: Mason may install it mid-session.
+local function can_build() return vim.fn.executable('tree-sitter') == 1 end
 
 -- Bundled parsers are already available. Only list parsers that need to be downloaded.
 local ensure_installed = {
@@ -33,7 +34,7 @@ local ensure_installed = {
     "yaml",
 }
 
-if can_build then
+if can_build() then
     local missing = vim.tbl_filter(function(lang)
         return not vim.list_contains(ts.get_installed(), lang)
     end, ensure_installed)
@@ -58,7 +59,7 @@ vim.api.nvim_create_autocmd('FileType', {
         end
 
         -- Auto-install: parser on first open of a supported filetype, then highlight
-        if can_build and vim.list_contains(ts.get_available(), lang) then
+        if can_build() and vim.list_contains(ts.get_available(), lang) then
             ts.install(lang):await(function(err)
                 if err then return end
                 vim.schedule(function()
